@@ -1,8 +1,9 @@
 from django.urls import path
 
-from profiles import views
+from . import views
 
 
 urlpatterns = [
-    path('', views.IndexView.as_view())
+    path('user/', views.UserViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('user/<int:pk>/', views.UserViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
 ]
