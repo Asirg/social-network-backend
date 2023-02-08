@@ -49,8 +49,9 @@ class UserAvatar(models.Model):
 
 class SocialContacts(models.Model):
     name = models.CharField(max_length=150)
-    icon = models.ImageField(upload_to='icon_social_account/')
     is_link = models.BooleanField()
+    def __str__(self) -> str:
+        return self.name
     
 class UserContacts(models.Model):
     user = models.ForeignKey(
@@ -61,18 +62,27 @@ class UserContacts(models.Model):
     )
     value = models.CharField(max_length=250)
 
+    def __str__(self) -> str:
+        return f'{self.user}:{self.social_contact} - {self.value}'
+
 class Technology(models.Model):
     parent = models.ForeignKey(
-        to='self', on_delete= models.SET_NULL, null=True, related_name='childs'
+        to='self', on_delete= models.SET_NULL, null=True, blank=True, related_name='childs'
     )
     name = models.CharField(max_length=200)
 
+    def __str__(self) -> str:
+        return f"{self.parent if self.parent else ''}:{self.name}"
+
 class UserTechnology(models.Model):
     user = models.ForeignKey(
-        to=UserNet, on_delete=models.CASCADE, related_name='skils'
+        to=UserNet, on_delete=models.CASCADE, related_name='skills'
     )
     technology = models.ForeignKey(
         to=Technology, on_delete=models.CASCADE
     )
     level = models.PositiveSmallIntegerField()
     experience = models.PositiveSmallIntegerField()
+
+    def __str__(self) -> str:
+        return f'{self.user}:{self.technology.name} - {self.level}/{self.experience}'

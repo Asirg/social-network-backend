@@ -2,7 +2,11 @@ from rest_framework import serializers
 
 from .models import (
     UserNet,
-    UserAvatar
+    UserAvatar,
+    Technology,
+    UserTechnology,
+    SocialContacts,
+    UserContacts,
 )
 
 class FilterUsingAvatar(serializers.ListSerializer):
@@ -17,6 +21,26 @@ class UserAvatarSerializer(serializers.ModelSerializer):
         model = UserAvatar
         list_serializer_class = FilterUsingAvatar
         fields = ('image', 'using', )
+
+class UserTechnologySerializer(serializers.ModelSerializer):
+    """ Serializer for user tecnologies """
+    technology = serializers.SlugRelatedField('name', read_only=True)
+    class Meta:
+        model = UserTechnology
+        fields = ('technology', 'level', 'experience', )
+
+class SocialContactsSerializer(serializers.ModelSerializer):
+    """ Serializer for Social Contacts """
+    class Meta:
+        model = SocialContacts
+        fields = ('name', 'is_link', )
+
+class UserContactsSerializer(serializers.ModelSerializer):
+    """ Serializer for Social Contacts for user """
+    social_contact = SocialContactsSerializer(read_only=True)
+    class Meta:
+        model = UserContacts
+        fields = ('social_contact', 'social_contact', )
 
 class ListUserNetSerializer(serializers.ModelSerializer):
     """ Serializer for explain list users """
@@ -38,10 +62,18 @@ class RetrieveUserNetHiddenSerializer(serializers.ModelSerializer):
 class RetrieveUserNetSerializer(serializers.ModelSerializer):
     """ Serializer for public profiles users """
     avatars = UserAvatarSerializer(many=True)
+    skils = UserTechnologySerializer(many=True)
+    contacts = UserContactsSerializer(many=True)
     class Meta:
         model = UserNet
         fields = (
-            'username', 'avatars', 'first_name', 'middle_name', 'last_name', 'last_login', 'gender', 'bio', 'birthday', 'email', 'date_joined',
+            'username', 'avatars', 
+            'gender', 'first_name', 'middle_name', 'last_name', 
+            'last_login', 
+            'bio', 'birthday', 
+            'email', 
+            'date_joined',
+            'skils', 'contacts',
         )
 
 # class CreateUserNetSerializer(serializers.ModelSerializer):
