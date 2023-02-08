@@ -62,7 +62,7 @@ class RetrieveUserNetHiddenSerializer(serializers.ModelSerializer):
 class RetrieveUserNetSerializer(serializers.ModelSerializer):
     """ Serializer for public profiles users """
     avatars = UserAvatarSerializer(many=True)
-    skils = UserTechnologySerializer(many=True)
+    skills = UserTechnologySerializer(many=True)
     contacts = UserContactsSerializer(many=True)
     class Meta:
         model = UserNet
@@ -73,7 +73,7 @@ class RetrieveUserNetSerializer(serializers.ModelSerializer):
             'bio', 'birthday', 
             'email', 
             'date_joined',
-            'skils', 'contacts',
+            'skills', 'contacts',
         )
 
 # class CreateUserNetSerializer(serializers.ModelSerializer):
