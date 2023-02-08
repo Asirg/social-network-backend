@@ -7,7 +7,8 @@ from profiles.models import (
     SocialContacts,
     UserContacts,
     Technology,
-    UserTechnology
+    UserTechnology,
+    Follower
 )
 
 class UserAdminNet(UserAdmin):
@@ -15,7 +16,7 @@ class UserAdminNet(UserAdmin):
     list_display_links = ('username', )
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (("Personal info"), {"fields": ("first_name", "last_name", "middle_name", "gender", "birthday", "email")}),
+        (("Personal info"), {"fields": ("first_name", "last_name", "middle_name", "profile_is_hidden", "gender", "birthday", "email", )}),
         (
             ("Permissions"),
             {
@@ -33,6 +34,7 @@ class UserAdminNet(UserAdmin):
 
 
 admin.site.register(UserNet, UserAdminNet)
+admin.site.register(Follower)
 
 admin.site.register(UserAvatar)
 admin.site.register(SocialContacts)

@@ -1,33 +1,61 @@
 from rest_framework import serializers
 
-from .models import UserNet
+from .models import (
+    UserNet,
+    UserAvatar
+)
+
+class FilterUsingAvatar(serializers.ListSerializer):
+    """ Filter by get only using Users avatars """
+    def to_representation(self, data):
+        data = data.filter(using=True)
+        return super().to_representation(data)
+
+class UserAvatarSerializer(serializers.ModelSerializer):
+    """ Serializer for user avatar """
+    class Meta:
+        model = UserAvatar
+        list_serializer_class = FilterUsingAvatar
+        fields = ('image', 'using', )
 
 class ListUserNetSerializer(serializers.ModelSerializer):
+    """ Serializer for explain list users """
+    avatars = UserAvatarSerializer(many=True)
     class Meta:
         model = UserNet
         fields = (
-            'id', 'is_active', 'username',
+            'id', 'username', 'avatars',
         )
-    
+
+class RetrieveUserNetHiddenSerializer(serializers.ModelSerializer):
+    """ Serializer for hidden profiles users """
+    avatars = UserAvatarSerializer(many=True)
+    class Meta:
+        model = UserNet
+        fields = (
+            'username', 'avatars',
+        )
 class RetrieveUserNetSerializer(serializers.ModelSerializer):
+    """ Serializer for public profiles users """
+    avatars = UserAvatarSerializer(many=True)
     class Meta:
         model = UserNet
         fields = (
-            'id', 'last_login', 'username', 'first_name', 'last_name', 'email', 'date_joined', 'bio', 'gender', 'birthday',
+            'username', 'avatars', 'first_name', 'middle_name', 'last_name', 'last_login', 'gender', 'bio', 'birthday', 'email', 'date_joined',
         )
 
-class CreateUserNetSerializer(serializers.ModelSerializer):
+# class CreateUserNetSerializer(serializers.ModelSerializer):
 
-    def create(self, validated_data):
-        user = UserNet(
-            **validated_data
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+#     def create(self, validated_data):
+#         user = UserNet(
+#             **validated_data
+#         )
+#         user.set_password(validated_data['password'])
+#         user.save()
+#         return user
 
-    class Meta:
-        model = UserNet
-        fields = (
-            'username', 'password',
-        )
+#     class Meta:
+#         model = UserNet
+#         fields = (
+#             'username', 'password',
+#         )

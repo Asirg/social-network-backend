@@ -10,4 +10,3 @@ class Owner(BasePermission):
             request.method in SAFE_METHODS or 
             request.user.id  == view.get_object().id
         )
-    

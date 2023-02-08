@@ -14,10 +14,32 @@ class UserNet(AbstractUser):
     bio = models.TextField(null=True)
     gender = models.CharField(max_length=6, choices=GENDER, null=True)
     birthday = models.DateField(null=True)
+    profile_is_hidden = models.BooleanField(default=False)
+    
+    followers = models.ManyToManyField(
+        to='self', null=True
+    )
 
     def get_full_name(self):
         return f'{super().get_full_name()} {self.middle_name}'
 
+class Follower(models.Model):
+    RELATION = (
+        ('not confirmed', 'not confirmed'),
+        ('confirmed', 'confirmed'),
+    )
+
+    subscription = models.ForeignKey(
+        to=UserNet, on_delete=models.CASCADE, related_name='subscribers'
+    )
+    follower = models.ForeignKey(
+        to=UserNet, on_delete=models.CASCADE, related_name='subscriptions'
+    )
+    relation = models.CharField(max_length=20, choices=RELATION, default='not confirmed')
+
+    def __str__(self) -> str:
+        return f'{self.follower.username}:{self.subscription}'
+    
 class UserAvatar(models.Model):
     user = models.ForeignKey(
         to=UserNet, on_delete=models.CASCADE, related_name='avatars'
