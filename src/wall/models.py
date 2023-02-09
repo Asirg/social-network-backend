@@ -12,9 +12,9 @@ class Post(models.Model):
     )
     header = models.CharField(max_length=200)
     content = models.TextField()
-    data = models.DateTimeField(auto_now_add=True, blank=True)
-    published = models.BooleanField()
-    number_of_views = models.PositiveBigIntegerField()
+    published = models.BooleanField(default=True)
+    published_date = models.DateTimeField(auto_now_add=True, blank=True)
+    number_of_views = models.PositiveBigIntegerField(default=0)
     tags = models.ManyToManyField(
         to=Technology, related_name='posts'
     )
@@ -34,7 +34,7 @@ class PostComment (AbstractComment):
 class PostReaction(AbstractReaction):
     """"""
     post = models.ForeignKey(
-        to=Post, on_delete=models.CASCADE, related_name='post_reactions'
+        to=Post, on_delete=models.CASCADE, related_name='reactions'
     )
 
     def __str__(self) -> str:
@@ -43,7 +43,7 @@ class PostReaction(AbstractReaction):
 class CommentReaction(AbstractReaction):
     """"""
     comment = models.ForeignKey(
-        to=PostComment, on_delete=models.CASCADE, related_name='comment_reactions'
+        to=PostComment, on_delete=models.CASCADE, related_name='reactions'
     )
 
     def __str__(self) -> str:
