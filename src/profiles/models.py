@@ -20,6 +20,9 @@ class UserNet(AbstractUser):
         to='self', null=True
     )
 
+    def __str__(self) -> str:
+        return self.username
+
     def get_full_name(self):
         return f'{super().get_full_name()} {self.middle_name}'
 

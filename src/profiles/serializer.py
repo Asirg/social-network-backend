@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from wall.serializers import ListPostSerialier
 from .models import (
     UserNet,
     UserAvatar,
@@ -21,7 +22,7 @@ class UserAvatarSerializer(serializers.ModelSerializer):
         model = UserAvatar
         list_serializer_class = FilterUsingAvatar
         fields = ('image', 'using', )
-
+        
 class UserTechnologySerializer(serializers.ModelSerializer):
     """ Serializer for user tecnologies """
     technology = serializers.SlugRelatedField('name', read_only=True)
@@ -64,6 +65,8 @@ class RetrieveUserNetSerializer(serializers.ModelSerializer):
     avatars = UserAvatarSerializer(many=True)
     skills = UserTechnologySerializer(many=True)
     contacts = UserContactsSerializer(many=True)
+    posts = ListPostSerialier(many=True
+    )
     class Meta:
         model = UserNet
         fields = (
@@ -74,6 +77,7 @@ class RetrieveUserNetSerializer(serializers.ModelSerializer):
             'email', 
             'date_joined',
             'skills', 'contacts',
+            'posts',
         )
 
 # class CreateUserNetSerializer(serializers.ModelSerializer):
