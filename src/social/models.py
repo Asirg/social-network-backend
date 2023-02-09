@@ -10,8 +10,8 @@ class AbstractComment(models.Model):
         'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='childs'
     )
     content = models.TextField()
-    create_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
@@ -24,7 +24,6 @@ class ReactionEmotion(models.Model):
         ('fun', 'fun'),
     )
     emotion = models.CharField(max_length=20, choices=EMOTION)
-    icon = models.ImageField(upload_to='emotion_icons/')
 
 class AbstractReaction(models.Model):
     user = models.ForeignKey(
