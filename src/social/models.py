@@ -16,22 +16,18 @@ class AbstractComment(models.Model):
     class Meta:
         abstract = True
 
-class ReactionEmotion(models.Model):
+class AbstractReaction(models.Model):
     EMOTION = (
         ('like', 'like'),
         ('dislike', 'dislike'),
         ('pog', 'pog'),
         ('fun', 'fun'),
     )
-    emotion = models.CharField(max_length=20, choices=EMOTION)
-
-class AbstractReaction(models.Model):
+    
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
-    emotion = models.ForeignKey(
-        to=ReactionEmotion, on_delete=models.CASCADE
-    )
+    emotion = models.CharField(max_length=20, choices=EMOTION)
 
     class Meta:
         abstract = True
