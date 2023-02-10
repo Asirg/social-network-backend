@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models import Count
 
 from social.models import AbstractComment, AbstractReaction
 from profiles.models import UserNet, Technology
@@ -19,6 +20,17 @@ class Post(models.Model):
         to=Technology, related_name='posts'
     )
 
+    @property
+    def comment_count(self):
+        return self.comments.all().count()
+
+    @property
+    def reactions_count(self):
+        return Post.objects.get(pk=1)\
+                            .reactions.all()\
+                            .values('emotion')\
+                            .annotate(count = Count('emotion'))
+                            
     def __str__(self) -> str:
         return f'{self.user}:{self.header}'
 
