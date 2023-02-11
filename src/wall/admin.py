@@ -4,7 +4,7 @@ from wall.models import (
     Post,
     PostComment,
     PostReaction,
-    CommentReaction,   
+    CommentReaction,
 )
 
 admin.site.register(Post)
