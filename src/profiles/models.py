@@ -6,14 +6,15 @@ from django.db import models
 class UserNet(AbstractUser):
     """ Custom User model for social-network """
     GENDER = (
-        ('ml', 'male'),
-        ('fm', 'female'),
+        ('male', 'male'),
+        ('female', 'female'),
     )
 
     middle_name = models.CharField(max_length=50, null=True)
     bio = models.TextField(null=True)
     gender = models.CharField(max_length=6, choices=GENDER, null=True)
     birthday = models.DateField(null=True)
+    description = models.CharField(max_length=200, null=True)
     profile_is_hidden = models.BooleanField(default=False)
     
     followers = models.ManyToManyField(

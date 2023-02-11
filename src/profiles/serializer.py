@@ -65,12 +65,11 @@ class RetrieveUserNetSerializer(serializers.ModelSerializer):
     avatars = UserAvatarSerializer(many=True)
     skills = UserTechnologySerializer(many=True)
     contacts = UserContactsSerializer(many=True)
-    posts = ListPostSerialier(many=True
-    )
+    posts = ListPostSerialier(many=True)
     class Meta:
         model = UserNet
         fields = (
-            'username', 'avatars', 
+            'username', 'avatars', 'description',
             'gender', 'first_name', 'middle_name', 'last_name', 
             'last_login', 
             'bio', 'birthday', 
@@ -79,19 +78,3 @@ class RetrieveUserNetSerializer(serializers.ModelSerializer):
             'skills', 'contacts',
             'posts',
         )
-
-# class CreateUserNetSerializer(serializers.ModelSerializer):
-
-#     def create(self, validated_data):
-#         user = UserNet(
-#             **validated_data
-#         )
-#         user.set_password(validated_data['password'])
-#         user.save()
-#         return user
-
-#     class Meta:
-#         model = UserNet
-#         fields = (
-#             'username', 'password',
-#         )
