@@ -2,7 +2,7 @@ from rest_framework import views, mixins, viewsets, generics
 from rest_framework.response import Response
 from rest_framework import permissions
 
-from utility.permissions import Owner, IsHiddenProfile
+from utility.permissions import Owner, ForConfirmedSubcribers
 from utility.mixins import MixedActionsMixin
 from .models import UserNet
 from .serializer import (
@@ -14,18 +14,18 @@ from .serializer import (
 class UserViewSet(
     MixedActionsMixin,
     viewsets.GenericViewSet, 
-    mixins.ListModelMixin, 
+    # mixins.ListModelMixin, 
     mixins.RetrieveModelMixin, 
-    mixins.UpdateModelMixin,
+    # mixins.UpdateModelMixin,
     ):
     """"""
     serializers = {
-        'list': ListUserNetSerializer,
+        # 'list': ListUserNetSerializer,
         'retrieve': RetrieveUserNetSerializer,
-        'update': RetrieveUserNetSerializer,
+        # 'update': RetrieveUserNetSerializer,
     }
     action_permissions = {
-        'retrieve':[IsHiddenProfile],
+        'retrieve':[ForConfirmedSubcribers],
         'update':[Owner]
     }
 

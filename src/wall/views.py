@@ -1,7 +1,7 @@
 from rest_framework import mixins, viewsets, permissions
 
 from profiles.models import UserNet
-from utility.permissions import IsHiddenProfile
+from utility.permissions import ForConfirmedSubcribers
 from wall.serializers import ListPostSerialier, RetrievePostSerializer
 from wall.models import (
     Post,

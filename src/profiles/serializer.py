@@ -60,6 +60,25 @@ class RetrieveUserNetHiddenSerializer(serializers.ModelSerializer):
         fields = (
             'username', 'avatars',
         )
+
+
+class RetrievePublicUserNetSerializer(serializers.ModelSerializer):
+    """ Serializer for public profiles users """
+    avatars = UserAvatarSerializer(many=True)
+    skills = UserTechnologySerializer(many=True)
+    contacts = UserContactsSerializer(many=True)
+    posts = ListPostSerialier(many=True)
+    class Meta:
+        model = UserNet
+        fields = (
+            'avatars', 'username', 'first_name', 'middle_name', 'last_name',
+            'description', 'last_login', 
+            'gender', 'bio', 'birthday', 'email',
+            'date_joined',
+            'skills', 'contacts',
+            'posts', 'city', 'country'
+        )
+
 class RetrieveUserNetSerializer(serializers.ModelSerializer):
     """ Serializer for public profiles users """
     avatars = UserAvatarSerializer(many=True)
@@ -70,11 +89,7 @@ class RetrieveUserNetSerializer(serializers.ModelSerializer):
         model = UserNet
         fields = (
             'username', 'avatars', 'description',
-            'gender', 'first_name', 'middle_name', 'last_name', 
-            'last_login', 
-            'bio', 'birthday', 
-            'email', 
-            'date_joined',
-            'skills', 'contacts',
+            'last_login',
+            'skills',
             'posts',
         )
