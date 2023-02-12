@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from wall.serializers import ListPostSerialier
 from .models import (
     UserNet,
     UserAvatar,
@@ -21,7 +22,7 @@ class UserAvatarSerializer(serializers.ModelSerializer):
         model = UserAvatar
         list_serializer_class = FilterUsingAvatar
         fields = ('image', 'using', )
-
+        
 class UserTechnologySerializer(serializers.ModelSerializer):
     """ Serializer for user tecnologies """
     technology = serializers.SlugRelatedField('name', read_only=True)
@@ -59,35 +60,36 @@ class RetrieveUserNetHiddenSerializer(serializers.ModelSerializer):
         fields = (
             'username', 'avatars',
         )
+
+
+class RetrievePublicUserNetSerializer(serializers.ModelSerializer):
+    """ Serializer for public profiles users """
+    avatars = UserAvatarSerializer(many=True)
+    skills = UserTechnologySerializer(many=True)
+    contacts = UserContactsSerializer(many=True)
+    posts = ListPostSerialier(many=True)
+    class Meta:
+        model = UserNet
+        fields = (
+            'avatars', 'username', 'first_name', 'middle_name', 'last_name',
+            'description', 'last_login', 
+            'gender', 'bio', 'birthday', 'email',
+            'date_joined',
+            'skills', 'contacts',
+            'posts', 'city', 'country'
+        )
+
 class RetrieveUserNetSerializer(serializers.ModelSerializer):
     """ Serializer for public profiles users """
     avatars = UserAvatarSerializer(many=True)
     skills = UserTechnologySerializer(many=True)
     contacts = UserContactsSerializer(many=True)
+    posts = ListPostSerialier(many=True)
     class Meta:
         model = UserNet
         fields = (
-            'username', 'avatars', 
-            'gender', 'first_name', 'middle_name', 'last_name', 
-            'last_login', 
-            'bio', 'birthday', 
-            'email', 
-            'date_joined',
-            'skills', 'contacts',
+            'username', 'avatars', 'description',
+            'last_login',
+            'skills',
+            'posts',
         )
-
-# class CreateUserNetSerializer(serializers.ModelSerializer):
-
-#     def create(self, validated_data):
-#         user = UserNet(
-#             **validated_data
-#         )
-#         user.set_password(validated_data['password'])
-#         user.save()
-#         return user
-
-#     class Meta:
-#         model = UserNet
-#         fields = (
-#             'username', 'password',
-#         )

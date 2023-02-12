@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'djoser',
     'profiles',
+    'wall',
+    'social',
 ]
 
 MIDDLEWARE = [

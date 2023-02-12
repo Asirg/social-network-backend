@@ -128,3 +128,4 @@ dmypy.json
 .pyre/
 src/.env
 src/media/
+src/test.py
