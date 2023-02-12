@@ -7,6 +7,10 @@ class Owner(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.id  == obj.id
 
+class UserIsSubscription(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return request.user.id  == obj.subscription.id
+
 class ForConfirmedSubcribers(BasePermission):
     def has_object_permission(self, request, view, obj):
         return (

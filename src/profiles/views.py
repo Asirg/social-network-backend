@@ -1,32 +1,81 @@
-from rest_framework import views, mixins, viewsets, generics
-from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import mixins, viewsets, permissions
+from django.views import generic
 
-from utility.permissions import Owner, ForConfirmedSubcribers
-from utility.mixins import MixedActionsMixin
-from .models import UserNet
+from utility.permissions import ForConfirmedSubcribers, UserIsSubscription, Owner
+from utility.mixins import MixedActionsMixin, MixedPermissionMixin, MixedSerializerMixin
+from . import filters
+from .models import (
+    UserNet,
+    Follower,
+    Technology,
+    SocialContacts,
+    UserContacts,
+    UserTechnology
+)
 from .serializer import (
-    RetrieveUserNetSerializer,
-    RetrieveUserNetHiddenSerializer,
-    ListUserNetSerializer,
+    RetrieveUserSerializer,
+    UpdateUserSerializer,
+    UserSerializer,
+    FollowerSerializer,
+    TechnologySerializer,
+    RetrieveTechnologySerializer,
 )
 
 class UserViewSet(
-    MixedActionsMixin,
-    viewsets.GenericViewSet, 
-    # mixins.ListModelMixin, 
-    mixins.RetrieveModelMixin, 
-    # mixins.UpdateModelMixin,
+        MixedActionsMixin,
+        viewsets.GenericViewSet,
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+        mixins.UpdateModelMixin,
     ):
     """"""
     serializers = {
-        # 'list': ListUserNetSerializer,
-        'retrieve': RetrieveUserNetSerializer,
-        # 'update': RetrieveUserNetSerializer,
+        'list': UserSerializer,
+        'retrieve': RetrieveUserSerializer,
+        'update': UpdateUserSerializer,
     }
     action_permissions = {
         'retrieve':[ForConfirmedSubcribers],
-        'update':[Owner]
+        'update':[permissions.AllowAny],
     }
 
+    filterset_class = filters.UserFilter
+
     queryset = UserNet.objects.all()
+class FollowerViewSet(
+        MixedPermissionMixin,
+        viewsets.GenericViewSet,
+        mixins.ListModelMixin,
+        mixins.CreateModelMixin,
+        mixins.UpdateModelMixin,
+        mixins.DestroyModelMixin,
+    ):
+    action_permissions = {
+        'destroy':[UserIsSubscription], 
+        'update':[UserIsSubscription],
+    }
+
+    filterset_class = filters.FollowerFilter
+    serializer_class = FollowerSerializer
+
+    queryset = Follower.objects.all()
+
+class TechnologyViewSet(
+        MixedSerializerMixin,
+        viewsets.GenericViewSet,
+        mixins.CreateModelMixin,
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+    ):
+    serializers = {
+        'list': TechnologySerializer,
+        'retrieve': RetrieveTechnologySerializer,
+        'create': RetrieveTechnologySerializer,
+    }
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filterset_class = filters.TechnologyFilter
+
+    lookup_field = 'url'
+    lookup_url_kwarg = 'url'
+
+    queryset = Technology.objects.filter(confirmed=True)

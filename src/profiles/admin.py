@@ -13,10 +13,31 @@ from profiles.models import (
 
 class UserAdminNet(UserAdmin):
     list_display = ("id", "username", "email", "first_name", "last_name", "is_staff")
-    list_display_links = ('username', )
+    list_display_links = ("username", )
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (("Personal info"), {"fields": ("first_name", "last_name", "middle_name", "profile_is_hidden", "gender", "birthday", "email", )}),
+        (   
+            ("Personal info"), 
+            {
+                "fields": (
+                    (
+                    "first_name", 
+                    "last_name", 
+                    "middle_name", 
+                    "gender", 
+                    "birthday", 
+                    "city",
+                    "country",
+                    "email", 
+                ),(
+                    "user_is_hidden",
+                    "profile_is_hidden",
+                    "chat_is_closed",
+                    "personal_information_is_hidden",
+                    "activity_status_is_hidden",
+                ))
+            }
+        ),
         (
             ("Permissions"),
             {

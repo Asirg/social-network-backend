@@ -73,6 +73,14 @@ class Follower(models.Model):
     def __str__(self) -> str:
         return f'{self.follower.username}:{self.subscription}'
 
+    @property
+    def subscription_url(self):
+        return f'/api/user/{self.subscription}'
+
+    @property
+    def follower_url(self):
+        return f'/api/user/{self.follower}/'
+
 class SocialContacts(models.Model):
     """Social contacts
     """
@@ -102,6 +110,13 @@ class Technology(models.Model):
         to='self', on_delete= models.SET_NULL, null=True, blank=True, related_name='childs'
     )
     name = models.CharField(max_length=200)
+    url = models.SlugField(max_length=100)
+    content = models.TextField(default='')
+    confirmed = models.BooleanField(default=False)
+
+    @property
+    def absolute_url(self):
+        return f"/api/technology/{self.url}/"
 
     def __str__(self) -> str:
         return f"{self.parent if self.parent else ''}:{self.name}"
