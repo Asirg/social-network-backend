@@ -8,7 +8,6 @@ from .models import (
     UserNet,
     Follower,
     Technology,
-    SocialContacts,
     UserContacts,
     UserTechnology
 )
