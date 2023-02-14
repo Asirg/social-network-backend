@@ -46,10 +46,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'drf_yasg',
+    
     'djoser',
+    'skills',
+    'social',
     'profiles',
     'wall',
-    'social',
+    
+    
 ]
 
 MIDDLEWARE = [

@@ -4,16 +4,14 @@ from django.conf import settings
 from django.db import models
 
 from social.models import SocialContacts
+from skills.models import Technology
 
 
 class UserNet(AbstractUser):
     """Custom User model for social-network 
     """
     middle_name = models.CharField(max_length=50, null=True)
-
-    followers = models.ManyToManyField(
-        to='self', null=True
-    )
+    description = models.CharField(max_length=200, null=True)
 
     @property
     def full_name(self):
@@ -30,12 +28,14 @@ class Profile(models.Model):
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile',
     )
 
-    description = models.CharField(max_length=200, null=True)
-    bio = models.TextField(null=True)
-    gender = models.CharField(max_length=6, choices=GENDER, null=True)
-    birthday = models.DateField(null=True)
-    city = models.CharField(max_length=100, null=True)
-    country = models.CharField(max_length=300, null=True)
+    bio = models.TextField(null=True, blank=True)
+    gender = models.CharField(max_length=6, choices=GENDER, null=True, blank=True)
+    birthday = models.DateField(null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    country = models.CharField(max_length=300, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.username}:{self.user.id}"
 
 class PrivacySettings(models.Model):
     """
@@ -46,15 +46,27 @@ class PrivacySettings(models.Model):
         ('nobody', 'nobody'),
     )
 
-    user = models.OneToOneField(
+    profile = models.OneToOneField(
         to=Profile,  on_delete=models.CASCADE, related_name='privacy',
     )
     
     user_is_hidden = models.BooleanField(default=False) # Hidden user everywhere
     profile_is_hidden = models.BooleanField(default=False) # Hidden information on user profile
-    activity_status_is_hidden = models.CharField(max_length=20, choices=HIDDEN_STATUS, default='all') # Hidden current status and time last login 
+    # activity_status_is_hidden = models.CharField(max_length=20, choices=HIDDEN_STATUS, default='all') # Hidden current status and time last login 
 
     hidden_fields = HStoreField(null=True, blank=True)
+
+    def __check_privacy__(self, privacy, level):
+        return self.HIDDEN_STATUS.index((level, level)) < self.HIDDEN_STATUS.index((privacy, privacy))
+
+    def get_hidden_fields(self, level):
+        return [
+            field for field, privacy in self.hidden_fields.items() \
+                if self.__check_privacy__(privacy, level)
+        ]
+
+    def __str__(self) -> str:
+        return self.profile.user.username
     
 class UserAvatar(models.Model):
     """User image avatar, there may be several, only one is used
@@ -107,23 +119,7 @@ class UserContacts(models.Model):
     def __str__(self) -> str:
         return f'{self.user}:{self.social_contact} - {self.value}'
 
-class Technology(models.Model):
-    """Techologies in social-network
-    """
-    parent = models.ForeignKey(
-        to='self', on_delete= models.SET_NULL, null=True, blank=True, related_name='childs'
-    )
-    name = models.CharField(max_length=200)
-    url = models.SlugField(max_length=100)
-    content = models.TextField(default='')
-    confirmed = models.BooleanField(default=False)
 
-    @property
-    def absolute_url(self):
-        return f"/api/technology/{self.url}/"
-
-    def __str__(self) -> str:
-        return f"{self.parent if self.parent else ''}:{self.name}"
 
 class UserTechnology(models.Model):
     """Techologies that users have

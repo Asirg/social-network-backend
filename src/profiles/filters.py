@@ -11,8 +11,6 @@ class FollowerFilter(filters.FilterSet):
     class Meta:
         model = Follower
         fields = {
-            'subscription': ['exact'],
-            'follower': ['exact'],
             'relation': ['exact'],
         } 
 
