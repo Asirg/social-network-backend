@@ -31,3 +31,11 @@ class AbstractReaction(models.Model):
 
     class Meta:
         abstract = True
+
+class SocialContacts(models.Model):
+    """Social contacts
+    """
+    name = models.CharField(max_length=150)
+    is_link = models.BooleanField()
+    def __str__(self) -> str:
+        return self.name

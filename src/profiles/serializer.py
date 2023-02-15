@@ -1,95 +1,117 @@
 from rest_framework import serializers
 
 from wall.serializers import ListPostSerialier
+from social.serializers import SocialContactsSerializer
+from utility.services import check_user_privacy
 from .models import (
-    UserNet,
     UserAvatar,
+    Profile,
+    PrivacySettings,
+    UserNet,
+    
+    
     Technology,
     UserTechnology,
     SocialContacts,
     UserContacts,
+    Follower,
 )
+class UsingUserAvatarSerializer(serializers.BaseSerializer):
+    """ Serializer for get using user Avatar
+    """
+    def to_representation(self, instance):
+        return instance.get(using=True).image.url
 
-class FilterUsingAvatar(serializers.ListSerializer):
-    """ Filter by get only using Users avatars """
-    def to_representation(self, data):
-        data = data.filter(using=True)
-        return super().to_representation(data)
+class UserSerializer(serializers.ModelSerializer):
+    """ Serializer for users in network
+    """
+    avatars = UsingUserAvatarSerializer()
 
-class UserAvatarSerializer(serializers.ModelSerializer):
-    """ Serializer for user avatar """
+    class Meta:
+        model = UserNet
+        fields = ('id', 'avatars', 'username', 'description', 'last_login')
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        exclude = ('id', 'user')
+        
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        hidden_fields = instance.privacy.get_hidden_fields(
+                check_user_privacy(instance.user, self.context['request'].user)
+        )
+        return {
+            key:value for key, value in data.items() \
+                if key not in hidden_fields
+        }
+
+class RetrieveUserSerializer(serializers.ModelSerializer):
+    """ Serializer for detail informations about users
+    """
+    profile = UserProfileSerializer()
+
+    last_login = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = UserNet
+        fields = ('id', 'avatars', 'username', 'description', 'last_login', 'profile',)
+
+
+
+class UsingUserAvatarSerializer(serializers.ModelSerializer):
+    """ Serializer for using user avatar 
+    """
     class Meta:
         model = UserAvatar
-        list_serializer_class = FilterUsingAvatar
         fields = ('image', 'using', )
-        
+
+class TechnologyParentSerializer(serializers.ModelSerializer):
+    """
+    """
+    class Meta:
+        model = Technology
+        fields = ('name', 'absolute_url')
+
+class TechnologySerializer(serializers.ModelSerializer):
+    """
+    """
+    parent = TechnologyParentSerializer()
+    class Meta:
+        model = Technology
+        fields = ('parent', 'name', 'absolute_url')
+
+class RetrieveTechnologySerializer(serializers.ModelSerializer):
+    """
+    """
+    class Meta:
+        model = Technology
+        fields = '__all__'
+
 class UserTechnologySerializer(serializers.ModelSerializer):
-    """ Serializer for user tecnologies """
+    """ Serializer for user tecnologies 
+    """
     technology = serializers.SlugRelatedField('name', read_only=True)
     class Meta:
         model = UserTechnology
         fields = ('technology', 'level', 'experience', )
 
-class SocialContactsSerializer(serializers.ModelSerializer):
-    """ Serializer for Social Contacts """
-    class Meta:
-        model = SocialContacts
-        fields = ('name', 'is_link', )
-
 class UserContactsSerializer(serializers.ModelSerializer):
-    """ Serializer for Social Contacts for user """
+    """ Serializer for Social Contacts for user 
+    """
     social_contact = SocialContactsSerializer(read_only=True)
+
     class Meta:
         model = UserContacts
         fields = ('social_contact', 'social_contact', )
 
-class ListUserNetSerializer(serializers.ModelSerializer):
-    """ Serializer for explain list users """
-    avatars = UserAvatarSerializer(many=True)
-    class Meta:
-        model = UserNet
-        fields = (
-            'id', 'username', 'avatars',
-        )
 
-class RetrieveUserNetHiddenSerializer(serializers.ModelSerializer):
-    """ Serializer for hidden profiles users """
-    avatars = UserAvatarSerializer(many=True)
+class FollowerSerializer(serializers.ModelSerializer):
+    """
+    """
+    
     class Meta:
-        model = UserNet
+        model = Follower
         fields = (
-            'username', 'avatars',
-        )
-
-
-class RetrievePublicUserNetSerializer(serializers.ModelSerializer):
-    """ Serializer for public profiles users """
-    avatars = UserAvatarSerializer(many=True)
-    skills = UserTechnologySerializer(many=True)
-    contacts = UserContactsSerializer(many=True)
-    posts = ListPostSerialier(many=True)
-    class Meta:
-        model = UserNet
-        fields = (
-            'avatars', 'username', 'first_name', 'middle_name', 'last_name',
-            'description', 'last_login', 
-            'gender', 'bio', 'birthday', 'email',
-            'date_joined',
-            'skills', 'contacts',
-            'posts', 'city', 'country'
-        )
-
-class RetrieveUserNetSerializer(serializers.ModelSerializer):
-    """ Serializer for public profiles users """
-    avatars = UserAvatarSerializer(many=True)
-    skills = UserTechnologySerializer(many=True)
-    contacts = UserContactsSerializer(many=True)
-    posts = ListPostSerialier(many=True)
-    class Meta:
-        model = UserNet
-        fields = (
-            'username', 'avatars', 'description',
-            'last_login',
-            'skills',
-            'posts',
+            'id', 'relation', 'subscription_url', 'follower_url'
         )
